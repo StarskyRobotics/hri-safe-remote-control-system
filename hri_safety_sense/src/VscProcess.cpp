@@ -73,7 +73,7 @@ VscProcess::VscProcess() :
 	}
 
 	// Create Message Handlers
-	joystickHandler = new JoystickHandler();
+	joystickHandler = std::make_shared<JoystickHandler>();
 
 	// EStop callback
 	estopServ = rosNode.advertiseService("safety/service/send_emergency_stop", &VscProcess::EmergencyStop, this);
@@ -99,8 +99,6 @@ VscProcess::~VscProcess()
 {
     // Destroy vscInterface
 	vsc_cleanup(vscInterface);
-
-	if(joystickHandler) delete joystickHandler;
 }
 
 bool VscProcess::EmergencyStop(EmergencyStop::Request  &req, EmergencyStop::Response &res )

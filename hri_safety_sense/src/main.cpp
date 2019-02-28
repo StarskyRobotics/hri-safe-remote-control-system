@@ -14,8 +14,9 @@
 
 #include "ros/ros.h"
 #include "VscProcess.h"
+#include <memory>
 
-hri_safety_sense::VscProcess *VSCInterface;
+std::shared_ptr<hri_safety_sense::VscProcess> VSCInterface;
 
 /**
  * VSC Vehicle Interface
@@ -24,13 +25,10 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "VscProcess");
 
 	// Create vehicle interface
-	VSCInterface = new hri_safety_sense::VscProcess();
+	VSCInterface = std::make_shared<hri_safety_sense::VscProcess>();
 
 	// Allow ROS to handle timing and callbacks
 	ros::spin();
-
-	// Application ending
-	delete VSCInterface;
 
 	return 0;
 }

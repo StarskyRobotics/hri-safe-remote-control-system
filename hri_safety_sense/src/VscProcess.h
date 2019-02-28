@@ -74,7 +74,7 @@ namespace hri_safety_sense {
 		  ros::Time 			lastDataRx, lastTxTime;
 
 		  // Message Handlers
-		  MsgHandler			*joystickHandler;
+		  std::shared_ptr<MsgHandler> joystickHandler;
 
 		  /* File descriptor for VSC Interface */
 		  VscInterfaceType		*vscInterface;
