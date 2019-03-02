@@ -61,6 +61,7 @@ namespace hri_safety_sense {
 
 		  void readFromVehicle();
 		  int handleHeartbeatMsg(VscMsgType& recvMsg);
+		  int handleStatusMsg(VscMsgType& recvMsg);
 
 		  // Local State
 		  uint32_t 				myEStopState;
@@ -70,7 +71,7 @@ namespace hri_safety_sense {
 		  ros::NodeHandle 		rosNode;
 		  ros::Timer 	  		mainLoopTimer;
 		  ros::ServiceServer    estopServ, keyValueServ, keyStringServ;
-		  ros::Publisher		estopPub;
+		  ros::Publisher		estopPub, heartbeatPub, remoteStatPub;
 		  ros::Time 			lastDataRx, lastTxTime;
 
 		  // Message Handlers

@@ -1,0 +1,4 @@
+uint8 bat_level
+uint8 bat_charging
+uint8 con_strength_vsc
+uint8 con_strength_src

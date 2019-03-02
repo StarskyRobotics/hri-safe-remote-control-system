@@ -36,6 +36,9 @@
 #include "VehicleInterface.h"
 #include "VehicleMessages.h"
 
+#include "hri_safety_sense/RemoteStatus.h"
+#include "hri_safety_sense/VSCHeartbeat.h"
+
 using namespace hri_safety_sense;
 
 VscProcess::VscProcess() :
@@ -84,6 +87,8 @@ VscProcess::VscProcess() :
 
 	// Publish Emergency Stop Status
 	estopPub = rosNode.advertise<std_msgs::UInt32>("safety/emergency_stop", 10);
+	heartbeatPub = rosNode.advertise<VSCHeartbeat>("safety/heartbeat", 10);
+	remoteStatPub = rosNode.advertise<RemoteStatus>("safety/remote", 10);
 
 	// Main Loop Timer Callback
 	mainLoopTimer = rosNode.createTimer(ros::Duration(1.0/VSC_INTERFACE_RATE), &VscProcess::processOneLoop, this);
@@ -154,6 +159,13 @@ int VscProcess::handleHeartbeatMsg(VscMsgType& recvMsg)
 		estopValue.data = msgPtr->EStopStatus;
 		estopPub.publish(estopValue);
 
+		VSCHeartbeat msg;
+		msg.autonomy = msgPtr->AutonomonyMode;
+		msg.mode = msgPtr->VscMode;
+		msg.estops = msgPtr->EStopStatus;
+
+		heartbeatPub.publish(msg);
+
 		if(msgPtr->EStopStatus > 0) {
 			ROS_WARN("Received ESTOP from the vehicle!!! 0x%x",msgPtr->EStopStatus);
 		}
@@ -165,6 +177,29 @@ int VscProcess::handleHeartbeatMsg(VscMsgType& recvMsg)
 	}
 
 	return retVal;
+}
+
+int VscProcess::handleStatusMsg(VscMsgType& recvMsg) {
+    if(recvMsg.msg.length == sizeof(RemoteStatusMsgType)) {
+        ROS_DEBUG("Received Remote Status from VSC");
+
+        RemoteStatusMsgType *msgPtr = (RemoteStatusMsgType*)recvMsg.msg.data;
+
+        RemoteStatus msg;
+        msg.bat_level = msgPtr->BatteryLevel;
+        msg.bat_charging = msgPtr->BatteryCharging;
+        msg.con_strength_vsc = msgPtr->ConnectionStrengthVSC;
+        msg.con_strength_src = msgPtr->ConnectionStrengthSRC;
+
+        remoteStatPub.publish(msg);
+
+    } else {
+        ROS_WARN("RECEIVED STATUS WITH INVALID MESSAGE SIZE! Expected: 0x%x, Actual: 0x%x",
+                (unsigned int)sizeof(RemoteStatusMsgType), recvMsg.msg.length);
+        return 1;
+    }
+
+    return 0;
 }
 
 void VscProcess::readFromVehicle()
@@ -196,6 +231,11 @@ void VscProcess::readFromVehicle()
 //			handleFeedbackMsg(&recvMsg);
 
 			break;
+		case MSG_REMOTE_STATUS:
+		    if(handleStatusMsg(recvMsg) == 0) {
+                lastDataRx = ros::Time::now();
+		    }
+		    break;
 		default:
 			errorCounts.invalidRxMsgCount++;
 			ROS_ERROR("Receive Error.  Invalid MsgType (0x%02X)",recvMsg.msg.msgType);

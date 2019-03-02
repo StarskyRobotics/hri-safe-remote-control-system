@@ -64,6 +64,7 @@ enum VSC_MESSAGE_TYPE {
 	MSG_VSC_NMEA_STRING = 0x12,
 	MSG_VSC_HEARTBEAT = 0x20,
 	MSG_USER_HEARTBEAT = 0x21,
+	MSG_REMOTE_STATUS = 0x22,
 	MSG_USER_FEEDBACK = 0x30,
 	MSG_USER_FEEDBACK_STRING = 0x31
 };
@@ -197,6 +198,15 @@ typedef struct {
 	uint8_t AutonomonyMode;
 	uint32_t EStopStatus;
 } HeartbeatMsgType;
+
+typedef struct {
+    uint8_t BatteryLevel;    // 0 - 100%
+    uint8_t BatteryCharging; // 0 = Not Charging, 1 = Charging
+    uint8_t ConnectionStrengthVSC; // 0=Low/disconnected, 1=Medium, 2=High
+    uint8_t ConnectionStrengthSRC;
+    uint8_t RSSIVSC; // unused
+    uint8_t RSSISRC; // unused
+} RemoteStatusMsgType;
 
 /** GpsMsgType
  * 	The Structure for the packed gps message that is received from the VSC.
