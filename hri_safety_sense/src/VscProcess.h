@@ -61,7 +61,7 @@ namespace hri_safety_sense {
 
 		  void readFromVehicle();
 		  int handleHeartbeatMsg(VscMsgType& recvMsg);
-		  int handleStatusMsg(VscMsgType& recvMsg);
+		  int handleRemoteStatusMsg(VscMsgType& recvMsg);
 
 		  // Local State
 		  uint32_t 				myEStopState;

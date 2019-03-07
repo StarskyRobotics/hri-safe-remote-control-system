@@ -365,6 +365,34 @@ void vsc_send_heartbeat(VscInterfaceType* vscInterface, uint8_t EStopStatus) {
 }
 
 /**
+ * Send message control message to VSC
+ *
+ * @param vscInterface VSC Interface Structure.
+ * @param MessageType
+ * @param Enabled
+ * @param Interval
+ */
+void vsc_send_message_control(VscInterfaceType* vscInterface, uint8_t MessageType, uint8_t Enabled, uint16_t Interval) {
+    VscMsgType messageControlMsg;
+    MessageControlMsgType *msgPtr = (MessageControlMsgType *) messageControlMsg.msg.data;
+
+    /* Fill Message */
+    messageControlMsg.msg.msgType = MSG_MESSAGE_CONTROL;
+    messageControlMsg.msg.length = sizeof(MessageControlMsgType);
+
+    /* Set this value > 0 to indicate an E-STOP condition from SW */
+    msgPtr->MessageType = MessageType;
+    msgPtr->Enabled = Enabled;
+    msgPtr->Interval = Interval;
+
+    /* Send Message */
+    if (vsc_send_msg(vscInterface, &messageControlMsg) < 0) {
+        fprintf(stderr, "vsc_example: Send Message Failure (Errno: %i)\n", errno);
+    }
+
+}
+
+/**
  * Get Serial Interface File Descriptor
  *
  * This function returns the file descriptor of the serial interface to the VSC.

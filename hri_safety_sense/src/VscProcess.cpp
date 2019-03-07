@@ -96,6 +96,8 @@ VscProcess::VscProcess() :
 	// Init last time to now
 	lastDataRx = ros::Time::now();
 
+	vsc_send_message_control(vscInterface, MSG_REMOTE_STATUS, true, 100);
+
 	// Clear all error counters
 	memset(&errorCounts, 0, sizeof(errorCounts));
 }
@@ -179,7 +181,7 @@ int VscProcess::handleHeartbeatMsg(VscMsgType& recvMsg)
 	return retVal;
 }
 
-int VscProcess::handleStatusMsg(VscMsgType& recvMsg) {
+int VscProcess::handleRemoteStatusMsg(VscMsgType& recvMsg) {
     if(recvMsg.msg.length == sizeof(RemoteStatusMsgType)) {
         ROS_DEBUG("Received Remote Status from VSC");
 
@@ -232,7 +234,7 @@ void VscProcess::readFromVehicle()
 
 			break;
 		case MSG_REMOTE_STATUS:
-		    if(handleStatusMsg(recvMsg) == 0) {
+		    if(handleRemoteStatusMsg(recvMsg) == 0) {
                 lastDataRx = ros::Time::now();
 		    }
 		    break;

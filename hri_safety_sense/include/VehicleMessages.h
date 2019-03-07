@@ -65,6 +65,7 @@ enum VSC_MESSAGE_TYPE {
 	MSG_VSC_HEARTBEAT = 0x20,
 	MSG_USER_HEARTBEAT = 0x21,
 	MSG_REMOTE_STATUS = 0x22,
+	MSG_MESSAGE_CONTROL = 0x23,
 	MSG_USER_FEEDBACK = 0x30,
 	MSG_USER_FEEDBACK_STRING = 0x31
 };
@@ -207,6 +208,12 @@ typedef struct {
     uint8_t RSSIVSC; // unused
     uint8_t RSSISRC; // unused
 } RemoteStatusMsgType;
+
+typedef struct {
+    uint8_t MessageType; // Which VSC message type to modify
+    uint8_t Enabled; // Whether or not the message is transmitted
+    uint16_t Interval; // Time between transmissions in milliseconds, 20 - UINT16_MAX
+} MessageControlMsgType;
 
 /** GpsMsgType
  * 	The Structure for the packed gps message that is received from the VSC.

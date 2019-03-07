@@ -143,6 +143,9 @@ void vsc_send_user_feedback_string(VscInterfaceType* vscInterface, uint8_t key, 
  */
 void vsc_send_heartbeat(VscInterfaceType* vscInterface, uint8_t EStopStatus);
 
+
+void vsc_send_message_control(VscInterfaceType* vscInterface, uint8_t MessageType, uint8_t Enabled, uint16_t Interval);
+
 #ifdef __cplusplus
 }
 #endif
